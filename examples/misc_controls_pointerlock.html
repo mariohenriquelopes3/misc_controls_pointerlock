@@ -63,6 +63,8 @@
 			import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
 
 			import { MyRaycaster } from './MyRaycaster.js';
+
+			import { ConvexBufferGeometry } from './jsm/geometries/ConvexGeometry.js';
 			var myRaycaster;
 
 			var camera, scene, renderer, controls;
@@ -82,7 +84,10 @@
 			function init() {
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
+				camera.position.x = 390;
 				camera.position.y = 10;
+				camera.position.y = 10;
+				camera.lookAt(0, 0, 0);
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0xffffff );
@@ -203,6 +208,29 @@
 
 				//
 
+				// Mountain
+				var mountainHalfExtents = new THREE.Vector3( 64, 30, 64 );
+				var mountainPoints = [];
+				mountainPoints.push( new THREE.Vector3( mountainHalfExtents.x, - mountainHalfExtents.y, mountainHalfExtents.z ) );
+				mountainPoints.push( new THREE.Vector3( - mountainHalfExtents.x, - mountainHalfExtents.y, mountainHalfExtents.z ) );
+				mountainPoints.push( new THREE.Vector3( mountainHalfExtents.x, - mountainHalfExtents.y, - mountainHalfExtents.z ) );
+				mountainPoints.push( new THREE.Vector3( - mountainHalfExtents.x, - mountainHalfExtents.y, - mountainHalfExtents.z ) );
+				mountainPoints.push( new THREE.Vector3( 0, mountainHalfExtents.y, 0 ) );
+				var mountainGeometry = new ConvexBufferGeometry( mountainPoints );
+				position = mountainGeometry.attributes.position;
+				colors = [];
+				for ( var i = 0, l = position.count; i < l; i ++ ) {
+					color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+					colors.push( color.r, color.g, color.b );
+				}
+				mountainGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+				var mountain = new THREE.Mesh( mountainGeometry, floorMaterial );
+				
+				scene.add( mountain );
+				objects.push( mountain );
+				mountain.position.set(290, 30, 0);
+				
 				window.addEventListener( 'resize', onWindowResize, false );
 
 				myRaycaster = new MyRaycaster( controls, objects );
